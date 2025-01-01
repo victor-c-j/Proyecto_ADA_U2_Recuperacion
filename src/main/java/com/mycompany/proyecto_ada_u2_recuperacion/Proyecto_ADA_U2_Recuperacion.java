@@ -4,6 +4,10 @@
 
 package com.mycompany.proyecto_ada_u2_recuperacion;
 
+import com.mycompany.Controlador.ControladorVentanaPrincipal;
+import com.mycompany.Modelo.Conexion;
+import com.mycompany.Vista.VistaVentanaPrincipal;
+
 /**
  *
  * @author usuario
@@ -11,6 +15,8 @@ package com.mycompany.proyecto_ada_u2_recuperacion;
 public class Proyecto_ADA_U2_Recuperacion {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Conexion c = new Conexion();
+        VistaVentanaPrincipal vvp = new VistaVentanaPrincipal();
+        ControladorVentanaPrincipal cvp = new ControladorVentanaPrincipal(vvp, c);
     }
 }
