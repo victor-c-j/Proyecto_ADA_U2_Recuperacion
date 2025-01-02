@@ -1,92 +1,97 @@
 package com.mycompany.Vista;
 
 import com.mycompany.Modelo.AtletaDAO;
+import com.mycompany.Modelo.TablaAbstracta;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 
-/**
- *
- * @author Colorado JImenez Victor
- */
 public class VistaVentanaAtletas extends javax.swing.JFrame {
 
     AtletaDAO a1;
-   
 
     public VistaVentanaAtletas(AtletaDAO a1) {
         initComponents();
         this.a1 = a1;
         this.setVisible(true);
-        this.setLocationRelativeTo(null);//Hacemos que esta ventana se genere en el medio de nuestra pantalla.
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//define que cuando se puse el boton con la X en rojo, se cierre la ventana y se libere en memoria
-        this.setResizable(false);//La ventana mantendrá un tamaño fijo
-    
-        //Creamos y cargamos datos en la tabla
+        this.setLocationRelativeTo(null); // Centrar la ventana
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar correctamente
+        this.setResizable(false); // Ventana no redimensionable
+
+        // Cargar los datos de la consulta en la tabla
         cargarDatosAtletas();
     }
-    
+
+    // Método para cargar los datos de la consulta a la tabla
     public void cargarDatosAtletas() {
-        List<String[]> atletas = a1.obtenerAtletas();  // Ahora devuelve un arreglo con id_atleta, nombre, género y altura
+        // Realiza la consulta para obtener los datos
+       List<String[]> atletas = a1.obtenerAtletas();// Método que ejecuta la consulta SQL
+        
+        // Definir los nombres de las columnas
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("Atleta");
+        columnNames.add("Región");
+        columnNames.add("Código Región");
+        columnNames.add("Juegos Olímpicos Participados");
+        columnNames.add("Primer Juego Olímpico");
+        columnNames.add("Edad en el Último Juego");
+        columnNames.add("Total de Participaciones");
+        columnNames.add("Oro");
+        columnNames.add("Plata");
+        columnNames.add("Bronce");
+        columnNames.add("Total Medallas");
 
-        // Crear el modelo de la tabla
-        DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("ID Atleta");
-        modelo.addColumn("Nombre Completo");
-        modelo.addColumn("Género");
-        modelo.addColumn("Altura");
-
-        // Llenar la tabla con los datos
-        for (String[] atleta : atletas) {
-            modelo.addRow(atleta);
-        }
-
+        // Crear el objeto TablaAbstracta con los datos y las columnas
+        TablaAbstracta tablaModelo = new TablaAbstracta(atletas, columnNames);
+        
         // Asignar el modelo de la tabla a jTableAtletas
-        jTableAtletas.setModel(modelo);
+        jTableAtletas.setModel(tablaModelo);
     }
 
     // Método para filtrar los datos en la tabla según el texto de búsqueda
     public void filtrarTabla(String busqueda) {
-        List<String[]> atletas = a1.obtenerAtletas();
-        DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("ID Atleta");
-        modelo.addColumn("Nombre Completo");
-        modelo.addColumn("Género");
-        modelo.addColumn("Altura");
+        // Llamar al método de consulta con filtro de búsqueda
+        List<String[]> atletas = a1.obtenerDatosAtletasConsultaConFiltro(busqueda);
+        
+        // Nombres de las columnas
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("Atleta");
+        columnNames.add("Región");
+        columnNames.add("Código Región");
+        columnNames.add("Juegos Olímpicos Participados");
+        columnNames.add("Primer Juego Olímpico");
+        columnNames.add("Edad en el Último Juego");
+        columnNames.add("Total de Participaciones");
+        columnNames.add("Oro");
+        columnNames.add("Plata");
+        columnNames.add("Bronce");
+        columnNames.add("Total Medallas");
 
-        // Filtramos los datos según la búsqueda
-        for (String[] atleta : atletas) {
-            if (atleta[1].toLowerCase().contains(busqueda.toLowerCase())) {  // Buscamos solo en el nombre
-                modelo.addRow(atleta);
-            }
-        }
+        // Crear el modelo de tabla con los datos filtrados
+        TablaAbstracta tablaModelo = new TablaAbstracta(atletas, columnNames);
 
-        // Asignar el modelo de la tabla filtrada
-        jTableAtletas.setModel(modelo);
+        // Asignar el modelo filtrado a la tabla
+        jTableAtletas.setModel(tablaModelo);
     }
 
     // Método para obtener el atleta seleccionado de la tabla
     public String[] getAtletaSeleccionado() {
         int filaSeleccionada = jTableAtletas.getSelectedRow();
         if (filaSeleccionada != -1) {
-            String id = (String) jTableAtletas.getValueAt(filaSeleccionada, 0);
-            String nombre = (String) jTableAtletas.getValueAt(filaSeleccionada, 1);
-            String genero = (String) jTableAtletas.getValueAt(filaSeleccionada, 2);
-            String altura = (String) jTableAtletas.getValueAt(filaSeleccionada, 3);
-            return new String[]{id, nombre, genero, altura};  // Devolvemos el id junto con los otros datos
+            String atleta = (String) jTableAtletas.getValueAt(filaSeleccionada, 0);
+            String region = (String) jTableAtletas.getValueAt(filaSeleccionada, 1);
+            String codigoRegion = (String) jTableAtletas.getValueAt(filaSeleccionada, 2);
+            return new String[]{atleta, region, codigoRegion};  // Retorna solo el nombre del atleta y región como ejemplo
         }
         return null;
     }
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+
+    // Método para inicializar componentes del JFrame
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -163,13 +168,9 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    /**
-     * @param args the command line arguments
-     */
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables de la interfaz gráfica
     public javax.swing.JButton jButtonAtras;
     public javax.swing.JButton jButtonBuscarAtletas;
     public javax.swing.JButton jButtonEditar;
@@ -178,5 +179,4 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JTable jTableAtletas;
     public javax.swing.JTextField jTextFieldAtletas;
-    // End of variables declaration//GEN-END:variables
 }
