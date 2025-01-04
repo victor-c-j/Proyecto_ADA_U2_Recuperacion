@@ -1,99 +1,104 @@
 package com.mycompany.Vista;
 
-import com.mycompany.Modelo.AtletaDAO;
-import com.mycompany.Modelo.TablaAbstracta;
-import java.awt.BorderLayout;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
 
+/**
+ * Clase que representa la vista para gestionar atletas.
+ */
 public class VistaVentanaAtletas extends javax.swing.JFrame {
 
-    AtletaDAO a1;
-
-    public VistaVentanaAtletas(AtletaDAO a1) {
+    public VistaVentanaAtletas() {
         initComponents();
-        this.a1 = a1;
         this.setVisible(true);
         this.setLocationRelativeTo(null); // Centrar la ventana
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar correctamente
         this.setResizable(false); // Ventana no redimensionable
-
-        // Cargar los datos de la consulta en la tabla
-        cargarDatosAtletas();
     }
 
-    // Método para cargar los datos de la consulta a la tabla
-    public void cargarDatosAtletas() {
-        // Realiza la consulta para obtener los datos
-       List<String[]> atletas = a1.obtenerAtletas();// Método que ejecuta la consulta SQL
-        
+    /**
+     * Método para actualizar la tabla de atletas con nuevos datos.
+     *
+     * @param datos Lista de arreglos de String que contienen los datos de los atletas.
+     */
+    public void actualizarTablaAtletas(List<String[]> datos) {
         // Definir los nombres de las columnas
-        List<String> columnNames = new ArrayList<>();
-        columnNames.add("Atleta");
-        columnNames.add("Región");
-        columnNames.add("Código Región");
-        columnNames.add("Juegos Olímpicos Participados");
-        columnNames.add("Primer Juego Olímpico");
-        columnNames.add("Edad en el Último Juego");
-        columnNames.add("Total de Participaciones");
-        columnNames.add("Oro");
-        columnNames.add("Plata");
-        columnNames.add("Bronce");
-        columnNames.add("Total Medallas");
+        String[] columnNames = {
+            "Nombre Completo", "Región", "Código Región",
+            "Juegos Olímpicos Participados", "Primer Juego Olímpico",
+            "Edad Último Juego", "Total Participaciones", "Medallas"
+        };
 
-        // Crear el objeto TablaAbstracta con los datos y las columnas
-        TablaAbstracta tablaModelo = new TablaAbstracta(atletas, columnNames);
-        
-        // Asignar el modelo de la tabla a jTableAtletas
-        jTableAtletas.setModel(tablaModelo);
+        // Crear el modelo de la tabla con los nuevos datos
+        DefaultTableModel modelo = new DefaultTableModel(columnNames, 0);
+
+        // Añadir las filas al modelo
+        for (String[] fila : datos) {
+            modelo.addRow(fila);
+        }
+
+        // Establecer el modelo en la tabla
+        jTableAtletas.setModel(modelo);
     }
 
-    // Método para filtrar los datos en la tabla según el texto de búsqueda
-    public void filtrarTabla(String busqueda) {
-        // Llamar al método de consulta con filtro de búsqueda
-        List<String[]> atletas = a1.obtenerDatosAtletasConsultaConFiltro(busqueda);
-        
-        // Nombres de las columnas
-        List<String> columnNames = new ArrayList<>();
-        columnNames.add("Atleta");
-        columnNames.add("Región");
-        columnNames.add("Código Región");
-        columnNames.add("Juegos Olímpicos Participados");
-        columnNames.add("Primer Juego Olímpico");
-        columnNames.add("Edad en el Último Juego");
-        columnNames.add("Total de Participaciones");
-        columnNames.add("Oro");
-        columnNames.add("Plata");
-        columnNames.add("Bronce");
-        columnNames.add("Total Medallas");
-
-        // Crear el modelo de tabla con los datos filtrados
-        TablaAbstracta tablaModelo = new TablaAbstracta(atletas, columnNames);
-
-        // Asignar el modelo filtrado a la tabla
-        jTableAtletas.setModel(tablaModelo);
+    /**
+     * Obtiene el texto ingresado en el campo de búsqueda.
+     *
+     * @return Texto de búsqueda ingresado.
+     */
+    public String getTextoBusqueda() {
+        return jTextFieldAtletas.getText().trim();
     }
 
-    // Método para obtener el atleta seleccionado de la tabla
+    /**
+     * Limpia el texto ingresado en el campo de búsqueda.
+     */
+    public void limpiarTextoBusqueda() {
+        jTextFieldAtletas.setText("");
+    }
+
+    /**
+     * Obtiene el atleta seleccionado de la tabla.
+     *
+     * @return Un arreglo de Strings con los datos del atleta seleccionado, o null si no hay selección.
+     */
     public String[] getAtletaSeleccionado() {
         int filaSeleccionada = jTableAtletas.getSelectedRow();
         if (filaSeleccionada != -1) {
-            String atleta = (String) jTableAtletas.getValueAt(filaSeleccionada, 0);
-            String region = (String) jTableAtletas.getValueAt(filaSeleccionada, 1);
-            String codigoRegion = (String) jTableAtletas.getValueAt(filaSeleccionada, 2);
-            return new String[]{atleta, region, codigoRegion};  // Retorna solo el nombre del atleta y región como ejemplo
+            int columnas = jTableAtletas.getColumnCount();
+            String[] datosAtleta = new String[columnas];
+            for (int i = 0; i < columnas; i++) {
+                datosAtleta[i] = (String) jTableAtletas.getValueAt(filaSeleccionada, i);
+            }
+            return datosAtleta;
         }
         return null;
     }
 
-    // Método para inicializar componentes del JFrame
+    /**
+     * Muestra un mensaje al usuario.
+     *
+     * @param mensaje Mensaje a mostrar.
+     */
+    public void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
+    }
+
+    /**
+     * Confirma con el usuario si desea realizar una acción específica.
+     *
+     * @param mensaje Mensaje de confirmación.
+     * @return true si el usuario confirma, false de lo contrario.
+     */
+    public boolean confirmarAccion(String mensaje) {
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Confirmación", JOptionPane.YES_NO_OPTION);
+        return opcion == JOptionPane.YES_OPTION;
+    }
+
+    // Método auto-generado por el diseñador de interfaz gráfica para inicializar componentes
     @SuppressWarnings("unchecked")
     private void initComponents() {
-
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableAtletas = new javax.swing.JTable();
         jTextFieldAtletas = new javax.swing.JTextField();
@@ -106,14 +111,11 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTableAtletas.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+            new Object[][]{},
+            new String[]{
+                "Nombre Completo", "Región", "Código Región",
+                "Juegos Olímpicos Participados", "Primer Juego Olímpico",
+                "Edad Último Juego", "Total Participaciones", "Medallas"
             }
         ));
         jScrollPane1.setViewportView(jTableAtletas);
@@ -133,38 +135,38 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(53, 53, 53)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 558, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButtonBuscarAtletas)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButtonEditar)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButtonRegistrar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonEliminar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonAtras)))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(20, 20, 20)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonBuscarAtletas)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonEditar)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonRegistrar)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonEliminar)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonAtras)))
+                    .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonBuscarAtletas)
-                    .addComponent(jButtonAtras)
-                    .addComponent(jButtonEditar)
-                    .addComponent(jButtonRegistrar)
-                    .addComponent(jButtonEliminar))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(20, 20, 20)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonBuscarAtletas)
+                        .addComponent(jButtonEditar)
+                        .addComponent(jButtonRegistrar)
+                        .addComponent(jButtonEliminar)
+                        .addComponent(jButtonAtras))
+                    .addGap(20, 20, 20)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(20, 20, 20))
         );
 
         pack();

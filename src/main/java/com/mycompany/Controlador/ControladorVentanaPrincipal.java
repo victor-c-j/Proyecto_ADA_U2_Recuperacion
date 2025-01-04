@@ -27,7 +27,7 @@ public class ControladorVentanaPrincipal implements ActionListener {
 
         switch (action) {
             case "Atletas":
-                VistaVentanaAtletas vva = new VistaVentanaAtletas(new AtletaDAO(c.getConexion()));
+                VistaVentanaAtletas vva = new VistaVentanaAtletas();
                 vva.setVisible(true);
                 ControladorVentanaAtletas cva = new ControladorVentanaAtletas(vva, c);
                 vvp.dispose();
