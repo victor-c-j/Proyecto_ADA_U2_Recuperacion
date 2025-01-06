@@ -11,6 +11,7 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
 
     public VistaVentanaAtletas() {
         initComponents();
+        this.setSize(1200, 700); // Cambiar tamaño de la ventana
         this.setVisible(true);
         this.setLocationRelativeTo(null); // Centrar la ventana
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar correctamente
@@ -118,55 +119,63 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
                 "Edad Último Juego", "Total Participaciones", "Medallas"
             }
         ));
+        jTableAtletas.setRowHeight(30); // Altura de las filas para mejor visibilidad
         jScrollPane1.setViewportView(jTableAtletas);
 
+        jButtonBuscarAtletas.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonBuscarAtletas.setText("Buscar");
 
+        jButtonAtras.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonAtras.setText("Atrás");
         jButtonAtras.setActionCommand("Atras");
 
+        jButtonEditar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonEditar.setText("Editar");
 
+        jButtonRegistrar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonRegistrar.setText("Registrar");
 
+        jButtonEliminar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonEliminar.setText("Eliminar");
+
+        jTextFieldAtletas.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(20, 20, 20)
+                    .addGap(30, 30, 30)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1140, javax.swing.GroupLayout.PREFERRED_SIZE) // Tabla expandida
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButtonBuscarAtletas)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButtonEditar)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButtonRegistrar)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButtonEliminar)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButtonAtras)))
-                    .addGap(20, 20, 20))
+                            .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE) // Campo de búsqueda más grande
+                            .addGap(30, 30, 30)
+                            .addComponent(jButtonBuscarAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(30, 30, 30)
+                            .addComponent(jButtonEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(30, 30, 30)
+                            .addComponent(jButtonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(30, 30, 30)
+                            .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(30, 30, 30)
+                            .addComponent(jButtonAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(20, 20, 20)
+                    .addGap(30, 30, 30)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButtonBuscarAtletas)
-                        .addComponent(jButtonEditar)
-                        .addComponent(jButtonRegistrar)
-                        .addComponent(jButtonEliminar)
-                        .addComponent(jButtonAtras))
-                    .addGap(20, 20, 20)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(20, 20, 20))
+                        .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE) // Altura del campo de búsqueda
+                        .addComponent(jButtonBuscarAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(30, 30, 30)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE) // Altura de la tabla
+                    .addGap(30, 30, 30))
         );
 
         pack();

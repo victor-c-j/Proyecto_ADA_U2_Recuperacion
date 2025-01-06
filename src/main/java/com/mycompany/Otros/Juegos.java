@@ -8,6 +8,6 @@ package com.mycompany.Otros;
  *
  * @author usuario
  */
-public class Deporte {
+public class Juegos {
     
 }
