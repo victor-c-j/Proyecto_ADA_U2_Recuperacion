@@ -1,13 +1,10 @@
 package com.mycompany.Modelo;
 
+import com.mycompany.Otros.Atleta;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Colorado Jimenez Victor
- */
 public class AtletaDAO {
 
     private Connection conexion;
@@ -16,18 +13,17 @@ public class AtletaDAO {
         this.conexion = conexion;
     }
 
-    public List<String[]> obtenerAtletas() {
-        List<String[]> atletas = new ArrayList<>();
+    // Método para obtener una lista de atletas
+    public List<Atleta> obtenerAtletas() {
+        List<Atleta> atletas = new ArrayList<>();
         String consulta = "SELECT "
-                + "a.nombre_completo AS \"Atleta\", "
-                + "r.nombre_region AS \"Región\", "
-                + "CONCAT('(', r.noc, ')') AS \"Código Región\", "
-                + "COUNT(DISTINCT cj.id_juego_olimpico) AS \"Juegos Olímpicos Participados\", "
-                + "MIN(jo.agno_celebracion) AS \"Primer Juego Olímpico\", "
-                + "SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS \"Oro\", "
-                + "SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS \"Plata\", "
-                + "SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS \"Bronce\", "
-                + "SUM(CASE WHEN cde.id_puesto IN (1, 2, 3) THEN 1 ELSE 0 END) AS \"Total Medallas\" "
+                + "a.id_atleta, a.nombre_completo, r.nombre_region, r.noc, "
+                + "COUNT(DISTINCT cj.id_juego_olimpico) AS JuegosOlimpicosParticipados, "
+                + "MIN(jo.agno_celebracion) AS PrimerJuegoOlimpico, "
+                + "SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS Oro, "
+                + "SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS Plata, "
+                + "SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS Bronce, "
+                + "SUM(CASE WHEN cde.id_puesto IN (1, 2, 3) THEN 1 ELSE 0 END) AS TotalMedallas "
                 + "FROM atleta a "
                 + "JOIN region_atleta ra ON a.id_atleta = ra.id_atleta "
                 + "JOIN region r ON ra.id_region = r.id_region "
@@ -36,78 +32,137 @@ public class AtletaDAO {
                 + "LEFT JOIN juego_olimpico jo ON cj.id_juego_olimpico = jo.id_juego_olimpico "
                 + "GROUP BY a.id_atleta, a.nombre_completo, r.nombre_region, r.noc "
                 + "ORDER BY a.nombre_completo";
-    
+
         try (Statement stmt = conexion.createStatement(); ResultSet rs = stmt.executeQuery(consulta)) {
             while (rs.next()) {
-                String atleta = rs.getString("Atleta");
-                String region = rs.getString("Región");
-                String codigoRegion = rs.getString("Código Región");
-                String juegosOlimpicos = String.valueOf(rs.getInt("Juegos Olímpicos Participados"));
-                String primerJuegoOlimpico = String.valueOf(rs.getInt("Primer Juego Olímpico"));
-                String oro = String.valueOf(rs.getInt("Oro"));
-                String plata = String.valueOf(rs.getInt("Plata"));
-                String bronce = String.valueOf(rs.getInt("Bronce"));
-                String totalMedallas = String.valueOf(rs.getInt("Total Medallas"));
-    
-                // Añadimos los datos obtenidos en un array
-                atletas.add(new String[]{atleta, region + " (" + codigoRegion + ")", juegosOlimpicos,
-                    primerJuegoOlimpico, oro, plata, bronce, totalMedallas});
+                Atleta atleta = new Atleta();
+                atleta.setId(rs.getInt("id_atleta")); 
+                atleta.setNombreCompleto(rs.getString("nombre_completo"));
+                atleta.setRegion(rs.getString("nombre_region"));
+                atleta.setCodigoRegion(rs.getString("noc"));
+                atleta.setJuegosOlimpicosParticipados(rs.getInt("JuegosOlimpicosParticipados"));
+                atleta.setPrimerJuegoOlimpico(rs.getInt("PrimerJuegoOlimpico"));
+                atleta.setOro(rs.getInt("Oro"));
+                atleta.setPlata(rs.getInt("Plata"));
+                atleta.setBronce(rs.getInt("Bronce"));
+                atleta.setTotalMedallas(rs.getInt("TotalMedallas"));
+
+                atletas.add(atleta);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return atletas;
     }
+
+    // Método para obtener un atleta específico por su ID
+    public Atleta obtenerAtletaPorId(int idAtleta) {
+        Atleta atleta = null;
+        String consulta = "SELECT "
+                + "a.id_atleta, a.nombre_completo, r.nombre_region, r.noc, "
+                + "COUNT(DISTINCT cj.id_juego_olimpico) AS JuegosOlimpicosParticipados, "
+                + "MIN(jo.agno_celebracion) AS PrimerJuegoOlimpico, "
+                + "SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS Oro, "
+                + "SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS Plata, "
+                + "SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS Bronce, "
+                + "SUM(CASE WHEN cde.id_puesto IN (1, 2, 3) THEN 1 ELSE 0 END) AS TotalMedallas "
+                + "FROM atleta a "
+                + "JOIN region_atleta ra ON a.id_atleta = ra.id_atleta "
+                + "JOIN region r ON ra.id_region = r.id_region "
+                + "JOIN competidor_juego_olimpico cj ON a.id_atleta = cj.id_atleta "
+                + "LEFT JOIN competidor_de_evento cde ON cj.id_competidores = cde.id_competidor "
+                + "LEFT JOIN juego_olimpico jo ON cj.id_juego_olimpico = jo.id_juego_olimpico "
+                + "WHERE a.id_atleta = ? "
+                + "GROUP BY a.id_atleta, a.nombre_completo, r.nombre_region, r.noc";
+
+        try (PreparedStatement stmt = conexion.prepareStatement(consulta)) {
+            stmt.setInt(1, idAtleta);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                atleta = new Atleta();
+                atleta.setId(rs.getInt("id_atleta")); // Asignar el id del atleta
+                atleta.setNombreCompleto(rs.getString("nombre_completo"));
+                atleta.setRegion(rs.getString("nombre_region"));
+                atleta.setCodigoRegion(rs.getString("noc"));
+                atleta.setJuegosOlimpicosParticipados(rs.getInt("JuegosOlimpicosParticipados"));
+                atleta.setPrimerJuegoOlimpico(rs.getInt("PrimerJuegoOlimpico"));
+                atleta.setOro(rs.getInt("Oro"));
+                atleta.setPlata(rs.getInt("Plata"));
+                atleta.setBronce(rs.getInt("Bronce"));
+                atleta.setTotalMedallas(rs.getInt("TotalMedallas"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return atleta;
+    }
+
+    public void insertarAtleta(String nombre, String genero, float altura, String nombreRegion, int idRegion) {
+        // Primero obtener el ID del nuevo atleta
+        int nuevoId = obtenerUltimoId() + 1;
+    
+        // Consultas SQL para insertar en las tablas correspondientes
+        String sqlAtleta = "INSERT INTO atleta (id_atleta, nombre_completo, altura, genero) VALUES (?, ?, ?, ?)";
+        String sqlRegionAtleta = "INSERT INTO region_atleta (id_atleta, id_region) VALUES (?, ?)";
+        String sqlCompetidorJuegoOlimpico = "INSERT INTO competidor_juego_olimpico (id_atleta, id_juego_olimpico) VALUES (?, ?)";
+    
+        try {
+            // Comenzamos una transacción
+            conexion.setAutoCommit(false);
+    
+            // Insertamos en la tabla atleta
+            try (PreparedStatement pstAtleta = conexion.prepareStatement(sqlAtleta)) {
+                pstAtleta.setInt(1, nuevoId);
+                pstAtleta.setString(2, nombre);
+                pstAtleta.setFloat(3, altura);
+                pstAtleta.setString(4, genero);
+                pstAtleta.executeUpdate();
+            }
+    
+            // Insertamos en la tabla region_atleta
+            try (PreparedStatement pstRegionAtleta = conexion.prepareStatement(sqlRegionAtleta)) {
+                pstRegionAtleta.setInt(1, nuevoId);
+                pstRegionAtleta.setInt(2, idRegion); // Asumimos que el idRegion es proporcionado
+                pstRegionAtleta.executeUpdate();
+            }
+    
+            // Insertamos en la tabla competidor_juego_olimpico con un juego olímpico por defecto (id_juego_olimpico = 1)
+            try (PreparedStatement pstCompetidor = conexion.prepareStatement(sqlCompetidorJuegoOlimpico)) {
+                pstCompetidor.setInt(1, nuevoId); // Insertar el atleta
+                pstCompetidor.setInt(2, 1); // Asumimos que el id_juego_olimpico por defecto es 1
+                pstCompetidor.executeUpdate();
+            }
+    
+            // Commit de la transacción
+            conexion.commit();
+    
+        } catch (SQLException e) {
+            // En caso de error, hacer rollback
+            try {
+                conexion.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            // Restauramos el autocommit para que otras transacciones puedan ejecutarse normalmente
+            try {
+                conexion.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
 
-    // Actualizar un atleta
-    // Actualizar un atleta
-    public boolean actualizarAtleta(int idAtleta, String nombre, String genero, float altura) {
-        String query = "UPDATE atleta SET nombre_completo = ?, genero = ?, altura = ? WHERE id_atleta = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(query)) {
-            stmt.setString(1, nombre);
-            stmt.setString(2, genero);
-            stmt.setFloat(3, altura);
-            stmt.setInt(4, idAtleta);  // Usamos el id_atleta en lugar del nombre
-
-            // Ejecutamos la actualización y comprobamos cuántas filas fueron afectadas
-            int filasAfectadas = stmt.executeUpdate();
-
-            // Si al menos una fila fue afectada, la actualización fue exitosa
-            return filasAfectadas > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        // Si hubo algún error o no se actualizó nada, retornamos false
-        return false;
-    }
-
-    public void insertarAtleta(String nombre, String genero, float altura) {
-        int nuevoId = obtenerUltimoId() + 1;  // Obtener el último ID y sumarle 1 para el nuevo ID
-        String sql = "INSERT INTO Atleta (id_atleta, nombre_completo, genero, altura) VALUES (?, ?, ?, ?)";
-
-        try (PreparedStatement pst = conexion.prepareStatement(sql)) {
-            pst.setInt(1, nuevoId);  // Establecer el nuevo ID
-            pst.setString(2, nombre);  // Establecer el nombre
-            pst.setString(3, genero);  // Establecer el género
-            pst.setFloat(4, altura);   // Establecer la altura
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private int obtenerUltimoId() {
-        String sql = "SELECT MAX(id_atleta) FROM Atleta";
+        String sql = "SELECT MAX(id_atleta) FROM atleta";
         int ultimoId = 0;
 
         try (Statement stmt = conexion.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-
             if (rs.next()) {
-                ultimoId = rs.getInt(1);  // Obtener el valor del máximo ID
+                ultimoId = rs.getInt(1);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -115,114 +170,20 @@ public class AtletaDAO {
         return ultimoId;
     }
 
-    // Método auxiliar para obtener el id_atleta por su nombre (necesario para eliminar las referencias)
-    public int obtenerIdAtletaPorNombre(String nombre) {
-        String query = "SELECT id_atleta FROM atleta WHERE nombre_completo = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(query)) {
-            stmt.setString(1, nombre);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("id_atleta");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;  // Si no se encuentra el atleta
-    }
-
-    public List<String[]> obtenerDatosAtletasConsultaConFiltro(String busqueda) {
-        List<String[]> atletas = new ArrayList<>();
-        String consulta = "SELECT "
-                + "a.nombre_completo AS 'Atleta', "
-                + "r.nombre_region AS 'Región', "
-                + "CONCAT('(', r.noc, ')') AS 'Código Región', "
-                + "COUNT(DISTINCT cj.id_juego_olimpico) AS 'Juegos Olímpicos Participados', "
-                + "MIN(jo.agno_celebracion) AS 'Primer Juego Olímpico', "
-                + "cj.edad AS 'Edad en el Último Juego', "
-                + "COUNT(*) AS 'Total de Participaciones', "
-                + "SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS 'Oro', "
-                + "SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS 'Plata', "
-                + "SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS 'Bronce', "
-                + "SUM(CASE WHEN cde.id_puesto IN (1, 2, 3) THEN 1 ELSE 0 END) AS 'Total Medallas' "
-                + "FROM atleta a "
-                + "JOIN region_atleta ra ON a.id_atleta = ra.id_atleta "
-                + "JOIN region r ON ra.id_region = r.id_region "
-                + "JOIN competidor_juego_olimpico cj ON a.id_atleta = cj.id_atleta "
-                + "LEFT JOIN competidor_de_evento cde ON cj.id_competidores = cde.id_competidor "
-                + "LEFT JOIN juego_olimpico jo ON cj.id_juego_olimpico = jo.id_juego_olimpico "
-                + "WHERE a.nombre_completo LIKE ? "
-                + "GROUP BY a.id_atleta, a.nombre_completo, r.nombre_region, r.noc, cj.edad "
-                + "ORDER BY a.nombre_completo";
-
-        try (PreparedStatement stmt = conexion.prepareStatement(consulta)) {
-            stmt.setString(1, "%" + busqueda + "%");  // Filtrar por nombre de atleta
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    // Cambié List<Object> por String[] para que coincida con el tipo esperado
-                    String[] atleta = new String[11];  // Se crean 11 elementos para las 11 columnas
-                    atleta[0] = rs.getString("Atleta");
-                    atleta[1] = rs.getString("Región");
-                    atleta[2] = rs.getString("Código Región");
-                    atleta[3] = String.valueOf(rs.getInt("Juegos Olímpicos Participados"));
-                    atleta[4] = String.valueOf(rs.getInt("Primer Juego Olímpico"));
-                    atleta[5] = String.valueOf(rs.getInt("Edad en el Último Juego"));
-                    atleta[6] = String.valueOf(rs.getInt("Total de Participaciones"));
-                    atleta[7] = String.valueOf(rs.getInt("Oro"));
-                    atleta[8] = String.valueOf(rs.getInt("Plata"));
-                    atleta[9] = String.valueOf(rs.getInt("Bronce"));
-                    atleta[10] = String.valueOf(rs.getInt("Total Medallas"));
-
-                    // Añadimos el array de strings a la lista
-                    atletas.add(atleta);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return atletas;
-    }
-
     public void eliminarAtletaConTransaccion(int idAtleta) {
-        String deleteCompetidorEvento = "DELETE FROM competidor_de_evento WHERE id_competidor IN (SELECT id_competidor FROM competidor_juego_olimpico WHERE id_atleta = ?)";
-        String deleteCompetidorJuegoOlimpico = "DELETE FROM competidor_juego_olimpico WHERE id_atleta = ?";
-        String deleteRegionAtleta = "DELETE FROM region_atleta WHERE id_atleta = ?";
         String deleteAtleta = "DELETE FROM atleta WHERE id_atleta = ?";
-
+    
         try {
-            // Iniciar transacción
             conexion.setAutoCommit(false);
-
-            // Eliminar las filas relacionadas en competidor_de_evento
-            try (PreparedStatement stmtEvento = conexion.prepareStatement(deleteCompetidorEvento)) {
-                stmtEvento.setInt(1, idAtleta);
-                stmtEvento.executeUpdate();
-            }
-
-            // Eliminar las filas relacionadas en competidor_juego_olimpico
-            try (PreparedStatement stmtJuegoOlimpico = conexion.prepareStatement(deleteCompetidorJuegoOlimpico)) {
-                stmtJuegoOlimpico.setInt(1, idAtleta);
-                stmtJuegoOlimpico.executeUpdate();
-            }
-
-            // Eliminar las filas relacionadas en region_atleta
-            try (PreparedStatement stmtRegionAtleta = conexion.prepareStatement(deleteRegionAtleta)) {
-                stmtRegionAtleta.setInt(1, idAtleta);
-                stmtRegionAtleta.executeUpdate();
-            }
-
-            // Eliminar al atleta
+    
             try (PreparedStatement stmtAtleta = conexion.prepareStatement(deleteAtleta)) {
                 stmtAtleta.setInt(1, idAtleta);
                 stmtAtleta.executeUpdate();
             }
-
-            // Confirmar transacción
+    
             conexion.commit();
-
+    
         } catch (SQLException e) {
-            // En caso de error, revertir transacción
             try {
                 conexion.rollback();
             } catch (SQLException rollbackException) {
@@ -231,11 +192,85 @@ public class AtletaDAO {
             e.printStackTrace();
         } finally {
             try {
-                // Restaurar el auto commit
                 conexion.setAutoCommit(true);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    public boolean editarAtleta(Atleta atleta) {
+        String sql = "UPDATE atleta "
+                + "SET nombre_completo = ?, "
+                + "genero = ?, "
+                + "altura = ? "
+                + "WHERE id_atleta = ?";
+        boolean success = false;
+
+        try (PreparedStatement pst = conexion.prepareStatement(sql)) {
+            // Asignar los valores a los parámetros de la consulta
+            pst.setString(1, atleta.getNombreCompleto());
+            pst.setString(2, String.valueOf(atleta.getGenero())); // Asumiendo que 'genero' es un char (ej. 'M' o 'F')
+            pst.setFloat(3, atleta.getAltura());
+            pst.setInt(4, atleta.getId());
+
+            // Ejecutar la actualización
+            int rowsAffected = pst.executeUpdate();
+
+            // Si al menos una fila fue afectada, la actualización fue exitosa
+            if (rowsAffected > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+
+    public Atleta obtenerAtletaPorNombre(String nombreCompleto) {
+        Atleta atleta = null;
+        String consulta = "SELECT "
+                + "a.id_atleta, a.nombre_completo, r.nombre_region, r.noc, "
+                + "COUNT(DISTINCT cj.id_juego_olimpico) AS JuegosOlimpicosParticipados, "
+                + "MIN(jo.agno_celebracion) AS PrimerJuegoOlimpico, "
+                + "SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS Oro, "
+                + "SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS Plata, "
+                + "SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS Bronce, "
+                + "SUM(CASE WHEN cde.id_puesto IN (1, 2, 3) THEN 1 ELSE 0 END) AS TotalMedallas "
+                + "FROM atleta a "
+                + "JOIN region_atleta ra ON a.id_atleta = ra.id_atleta "
+                + "JOIN region r ON ra.id_region = r.id_region "
+                + "JOIN competidor_juego_olimpico cj ON a.id_atleta = cj.id_atleta "
+                + "LEFT JOIN competidor_de_evento cde ON cj.id_competidores = cde.id_competidor "
+                + "LEFT JOIN juego_olimpico jo ON cj.id_juego_olimpico = jo.id_juego_olimpico "
+                + "WHERE a.nombre_completo = ? "
+                + "GROUP BY a.id_atleta, a.nombre_completo, r.nombre_region, r.noc "
+                + "ORDER BY a.nombre_completo";
+    
+        try (PreparedStatement stmt = conexion.prepareStatement(consulta)) {
+            stmt.setString(1, nombreCompleto); // Asignamos el nombre del atleta a la consulta
+    
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    atleta = new Atleta();
+                    atleta.setId(rs.getInt("id_atleta"));
+                    atleta.setNombreCompleto(rs.getString("nombre_completo"));
+                    atleta.setRegion(rs.getString("nombre_region"));
+                    atleta.setCodigoRegion(rs.getString("noc"));
+                    atleta.setJuegosOlimpicosParticipados(rs.getInt("JuegosOlimpicosParticipados"));
+                    atleta.setPrimerJuegoOlimpico(rs.getInt("PrimerJuegoOlimpico"));
+                    atleta.setOro(rs.getInt("Oro"));
+                    atleta.setPlata(rs.getInt("Plata"));
+                    atleta.setBronce(rs.getInt("Bronce"));
+                    atleta.setTotalMedallas(rs.getInt("TotalMedallas"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return atleta; // Retorna el atleta encontrado o null si no se encuentra
+    }
+    
 }

@@ -3,7 +3,8 @@ package com.mycompany.Controlador;
 import com.mycompany.Otros.Atleta;
 import com.mycompany.Modelo.AtletaDAO;
 import com.mycompany.Modelo.Conexion;
-import com.mycompany.Vista.*;
+import com.mycompany.Vista.VistaVentanaAtletas;
+import com.mycompany.Vista.VistaVentanaPrincipal;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,7 +40,7 @@ public class ControladorVentanaAtletas implements ActionListener {
                 filtrarAtletas();
                 break;
 
-            case "Atras":
+            case "Atrás":
                 irAtras();
                 break;
 
@@ -61,8 +62,8 @@ public class ControladorVentanaAtletas implements ActionListener {
      * Carga los datos de los atletas desde el DAO y los pasa a la vista.
      */
     private void cargarDatosAtletas() {
-        List<String[]> datos = atletaDAO.obtenerAtletas();
-        vva.actualizarTablaAtletas(datos);
+        List<Atleta> atletas = atletaDAO.obtenerAtletas();
+        vva.actualizarTablaAtletas(atletas);
     }
 
     /**
@@ -71,8 +72,8 @@ public class ControladorVentanaAtletas implements ActionListener {
     private void filtrarAtletas() {
         String busqueda = vva.getTextoBusqueda();
         if (!busqueda.isEmpty()) {
-            List<String[]> datosFiltrados = atletaDAO.obtenerDatosAtletasConsultaConFiltro(busqueda);
-            vva.actualizarTablaAtletas(datosFiltrados);
+            List<Atleta> atletasFiltrados = atletaDAO.obtenerAtletas(); // Cambia esto según tus necesidades
+            vva.actualizarTablaAtletas(atletasFiltrados);
         } else {
             cargarDatosAtletas();
         }
@@ -82,80 +83,49 @@ public class ControladorVentanaAtletas implements ActionListener {
      * Elimina el atleta seleccionado de la tabla después de confirmar la acción.
      */
     private void eliminarAtleta() {
-        String[] atletaSeleccionado = vva.getAtletaSeleccionado();
-        if (atletaSeleccionado != null && atletaSeleccionado.length > 0) {
-            String nombreAtleta = atletaSeleccionado[0];  // Suponiendo que el nombre está en la primera columna
-            int idAtleta = atletaDAO.obtenerIdAtletaPorNombre(nombreAtleta);  // Obtener el ID por el nombre
-            if (idAtleta != -1) {
-                boolean confirmado = vva.confirmarAccion("¿Está seguro de que desea eliminar al atleta " + nombreAtleta + "?");
-                if (confirmado) {
-                    atletaDAO.eliminarAtletaConTransaccion(idAtleta);
-                    cargarDatosAtletas();
-                    vva.mostrarMensaje("Atleta eliminado con éxito.");
-                }
-            } else {
-                vva.mostrarMensaje("Error: El atleta no se encuentra.");
+        Atleta atletaSeleccionado = atletaDAO.obtenerAtletaPorNombre(vva.getAtletaSeleccionado().getNombreCompleto());
+        if (atletaSeleccionado != null) {
+            boolean confirmado = vva.confirmarAccion("¿Está seguro de que desea eliminar al atleta " + atletaSeleccionado.getNombreCompleto() + "?");
+            if (confirmado) {
+                atletaDAO.eliminarAtletaConTransaccion(atletaSeleccionado.getId());
+                cargarDatosAtletas();
+                vva.mostrarMensaje("Atleta eliminado con éxito.");
             }
         } else {
             vva.mostrarMensaje("Por favor, seleccione un atleta.");
         }
     }
-    
 
     /**
      * Permite editar los datos del atleta seleccionado.
      */
-/**
- * Permite editar los datos del atleta seleccionado.
- */
-private void editarAtleta() {
-    String[] atletaSeleccionado = vva.getAtletaSeleccionado();
-    if (atletaSeleccionado != null && atletaSeleccionado.length > 0) {
-        String nombreAtleta = atletaSeleccionado[0];  // Nombre del atleta
-        // Aquí ya no usamos las otras variables de la consulta ya que solo nos interesa el ID, nombre, género y altura
-       
-        // Obtener el ID del atleta
-        int idAtleta = atletaDAO.obtenerIdAtletaPorNombre(nombreAtleta);
-        
-        if (idAtleta != -1) {
-            // Pedir los nuevos datos al usuario
-            String nuevoNombre = JOptionPane.showInputDialog(vva, "Nuevo nombre completo:", nombreAtleta);
-            String nuevoGenero = JOptionPane.showInputDialog(vva, "Nuevo género:", "Masculino"); // Asumiendo un valor por defecto
-            String nuevoAlturaStr = JOptionPane.showInputDialog(vva, "Nueva altura:", "0.0");
-            Float nuevaAltura = null;
-        
-            // Validar que la altura sea un valor numérico
+    private void editarAtleta() {
+        Atleta atletaSeleccionado = vva.getAtletaSeleccionado();
+        if (atletaSeleccionado != null) {
+            String nuevoNombre = JOptionPane.showInputDialog(vva, "Nuevo nombre completo:", atletaSeleccionado.getNombreCompleto());
+            String nuevoGenero = JOptionPane.showInputDialog(vva, "Nuevo género:", atletaSeleccionado.getGenero());
+            String nuevoAlturaStr = JOptionPane.showInputDialog(vva, "Nueva altura:", atletaSeleccionado.getAltura());
+
             try {
-                nuevaAltura = Float.parseFloat(nuevoAlturaStr);
-            } catch (NumberFormatException e) {
-                vva.mostrarMensaje("La altura debe ser un número válido.");
-                return;
-            }
-            
-            // Validación de los datos ingresados
-            if (nuevoNombre != null && nuevoGenero != null && nuevaAltura != null) {
-                // Actualizar solo los campos requeridos: idAtleta, nombreCompleto, genero, altura
-                boolean actualizoExitosamente = atletaDAO.actualizarAtleta(idAtleta, nuevoNombre, nuevoGenero, nuevaAltura);
-                
-                if (actualizoExitosamente) {
+                float nuevaAltura = Float.parseFloat(nuevoAlturaStr);
+                atletaSeleccionado.setNombreCompleto(nuevoNombre);
+                atletaSeleccionado.setGenero(nuevoGenero);
+                atletaSeleccionado.setAltura(nuevaAltura);
+
+                boolean actualizado = atletaDAO.editarAtleta(atletaSeleccionado);
+                if (actualizado) {
                     cargarDatosAtletas();
                     vva.mostrarMensaje("Atleta actualizado con éxito.");
                 } else {
                     vva.mostrarMensaje("Error: No se pudo actualizar el atleta.");
                 }
-            } else {
-                vva.mostrarMensaje("Los campos no pueden estar vacíos.");
+            } catch (NumberFormatException e) {
+                vva.mostrarMensaje("La altura debe ser un número válido.");
             }
         } else {
-            vva.mostrarMensaje("Error: El atleta no se encuentra.");
+            vva.mostrarMensaje("Por favor, seleccione un atleta.");
         }
-    } else {
-        vva.mostrarMensaje("Por favor, seleccione un atleta.");
     }
-}
-
-    
-    
 
     /**
      * Registra un nuevo atleta en el sistema.
@@ -165,18 +135,15 @@ private void editarAtleta() {
         String genero = JOptionPane.showInputDialog(vva, "Género:");
         String alturaStr = JOptionPane.showInputDialog(vva, "Altura (en metros):");
 
-        // Validación de los campos de entrada
-        if (nombre != null && genero != null && alturaStr != null) {
-            try {
-                float altura = Float.parseFloat(alturaStr);
-                atletaDAO.insertarAtleta(nombre, genero, altura);
-                cargarDatosAtletas();
-                vva.mostrarMensaje("Atleta registrado con éxito.");
-            } catch (NumberFormatException e) {
-                vva.mostrarMensaje("Error: Altura no válida.");
-            }
-        } else {
-            vva.mostrarMensaje("Todos los campos son obligatorios.");
+        try {
+            float altura = Float.parseFloat(alturaStr);
+
+
+            atletaDAO.insertarAtletas(nombre, genero, altura);
+            cargarDatosAtletas();
+            vva.mostrarMensaje("Atleta registrado con éxito.");
+        } catch (NumberFormatException e) {
+            vva.mostrarMensaje("Error: Altura no válida.");
         }
     }
 

@@ -1,12 +1,11 @@
 package com.mycompany.Vista;
 
-import java.util.List;
+import com.mycompany.Otros.Atleta;
+import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
-/**
- * Clase que representa la vista para gestionar atletas.
- */
 public class VistaVentanaAtletas extends javax.swing.JFrame {
 
     public VistaVentanaAtletas() {
@@ -18,83 +17,65 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         this.setResizable(false); // Ventana no redimensionable
     }
 
-    /**
-     * Método para actualizar la tabla de atletas con nuevos datos.
-     *
-     * @param datos Lista de arreglos de String que contienen los datos de los atletas.
-     */
-    public void actualizarTablaAtletas(List<String[]> datos) {
-        // Definir los nombres de las columnas
+    public void actualizarTablaAtletas(List<Atleta> atletas) {
         String[] columnNames = {
-            "Nombre Completo", "Región", "Código Región",
-            "Juegos Olímpicos Participados", "Primer Juego Olímpico",
-            "Edad Último Juego", "Total Participaciones", "Medallas"
+                "Nombre Completo", "Región", "Código Región",
+                "Juegos Olímpicos Participados", "Primer Juego Olímpico",
+                "Oro", "Plata", "Bronce", "Total Medallas"
         };
 
-        // Crear el modelo de la tabla con los nuevos datos
         DefaultTableModel modelo = new DefaultTableModel(columnNames, 0);
 
-        // Añadir las filas al modelo
-        for (String[] fila : datos) {
-            modelo.addRow(fila);
+        for (Atleta atleta : atletas) {
+            modelo.addRow(new Object[]{
+                    atleta.getNombreCompleto(),
+                    atleta.getRegion(),
+                    atleta.getCodigoRegion(),
+                    atleta.getJuegosOlimpicosParticipados(),
+                    atleta.getPrimerJuegoOlimpico(),
+                    atleta.getOro(),
+                    atleta.getPlata(),
+                    atleta.getBronce(),
+                    atleta.getTotalMedallas()
+            });
         }
 
-        // Establecer el modelo en la tabla
         jTableAtletas.setModel(modelo);
     }
 
-    /**
-     * Obtiene el texto ingresado en el campo de búsqueda.
-     *
-     * @return Texto de búsqueda ingresado.
-     */
-    public String getTextoBusqueda() {
-        return jTextFieldAtletas.getText().trim();
-    }
-
-    /**
-     * Limpia el texto ingresado en el campo de búsqueda.
-     */
-    public void limpiarTextoBusqueda() {
-        jTextFieldAtletas.setText("");
-    }
-
-    /**
-     * Obtiene el atleta seleccionado de la tabla.
-     *
-     * @return Un arreglo de Strings con los datos del atleta seleccionado, o null si no hay selección.
-     */
-    public String[] getAtletaSeleccionado() {
+    public Atleta getAtletaSeleccionado() {
         int filaSeleccionada = jTableAtletas.getSelectedRow();
         if (filaSeleccionada != -1) {
-            int columnas = jTableAtletas.getColumnCount();
-            String[] datosAtleta = new String[columnas];
-            for (int i = 0; i < columnas; i++) {
-                datosAtleta[i] = (String) jTableAtletas.getValueAt(filaSeleccionada, i);
-            }
-            return datosAtleta;
+            return new Atleta(
+                    (String) jTableAtletas.getValueAt(filaSeleccionada, 0), // Nombre completo
+                    (String) jTableAtletas.getValueAt(filaSeleccionada, 1), // Región
+                    (String) jTableAtletas.getValueAt(filaSeleccionada, 2), // Código región
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 3), // Juegos Olímpicos Participados
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 4), // Primer Juego Olímpico
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 5), // Oro
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 6), // Plata
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 7), // Bronce
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 8)  // Total Medallas
+            );
         }
         return null;
     }
 
-    /**
-     * Muestra un mensaje al usuario.
-     *
-     * @param mensaje Mensaje a mostrar.
-     */
     public void mostrarMensaje(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje);
     }
 
-    /**
-     * Confirma con el usuario si desea realizar una acción específica.
-     *
-     * @param mensaje Mensaje de confirmación.
-     * @return true si el usuario confirma, false de lo contrario.
-     */
     public boolean confirmarAccion(String mensaje) {
         int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Confirmación", JOptionPane.YES_NO_OPTION);
         return opcion == JOptionPane.YES_OPTION;
+    }
+
+    public String getTextoBusqueda() {
+        return jTextFieldAtletas.getText().trim();
+    }
+
+    public void limpiarTextoBusqueda() {
+        jTextFieldAtletas.setText("");
     }
 
     // Método auto-generado por el diseñador de interfaz gráfica para inicializar componentes
@@ -110,15 +91,10 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         jButtonEliminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestión de Atletas");
 
-        jTableAtletas.setModel(new javax.swing.table.DefaultTableModel(
-            new Object[][]{},
-            new String[]{
-                "Nombre Completo", "Región", "Código Región",
-                "Juegos Olímpicos Participados", "Primer Juego Olímpico",
-                "Edad Último Juego", "Total Participaciones", "Medallas"
-            }
-        ));
+        // Establece un Layout adecuado si es necesario
+        this.setLayout(new BorderLayout()); // O cualquier otro Layout adecuado para tus necesidades
         jTableAtletas.setRowHeight(30); // Altura de las filas para mejor visibilidad
         jScrollPane1.setViewportView(jTableAtletas);
 
@@ -127,7 +103,6 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
 
         jButtonAtras.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonAtras.setText("Atrás");
-        jButtonAtras.setActionCommand("Atras");
 
         jButtonEditar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
         jButtonEditar.setText("Editar");
@@ -140,45 +115,21 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
 
         jTextFieldAtletas.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(30, 30, 30)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1140, javax.swing.GroupLayout.PREFERRED_SIZE) // Tabla expandida
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE) // Campo de búsqueda más grande
-                            .addGap(30, 30, 30)
-                            .addComponent(jButtonBuscarAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(30, 30, 30)
-                            .addComponent(jButtonEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(30, 30, 30)
-                            .addComponent(jButtonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(30, 30, 30)
-                            .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(30, 30, 30)
-                            .addComponent(jButtonAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGap(30, 30, 30))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(30, 30, 30)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextFieldAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE) // Altura del campo de búsqueda
-                        .addComponent(jButtonBuscarAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButtonEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButtonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButtonAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(30, 30, 30)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE) // Altura de la tabla
-                    .addGap(30, 30, 30))
-        );
+        // Aquí puedes mantener el diseño auto-generado del resto de componentes
+        // Agregar componentes al contenedor
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(jScrollPane1, BorderLayout.CENTER);
 
-        pack();
+        JPanel botonesPanel = new JPanel();
+        botonesPanel.add(jButtonBuscarAtletas);
+        botonesPanel.add(jButtonAtras);
+        botonesPanel.add(jButtonEditar);
+        botonesPanel.add(jButtonRegistrar);
+        botonesPanel.add(jButtonEliminar);
+        panel.add(botonesPanel, BorderLayout.SOUTH);
+
+        this.add(panel); // Agrega el panel a la ventana principal
     }
 
     // Variables de la interfaz gráfica

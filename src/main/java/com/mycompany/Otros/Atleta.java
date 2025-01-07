@@ -1,33 +1,64 @@
 package com.mycompany.Otros;
 
-/**
- * Clase Atleta que mapea los datos obtenidos de la base de datos mediante AtletaDAO.
- * @author Colorado Jimenez Victor
- */
 public class Atleta {
-    private int idAtleta;
     private String nombreCompleto;
     private String region;
     private String codigoRegion;
     private int juegosOlimpicosParticipados;
     private int primerJuegoOlimpico;
-    private int edadUltimoJuego;
-    private int totalParticipaciones;
-    private int medallasOro;
-    private int medallasPlata;
-    private int medallasBronce;
+    private int oro;
+    private int plata;
+    private int bronce;
     private int totalMedallas;
+    
+    private String genero;
+    private float altura;
+    private int Id;
 
-    // Getters y setters
-
-    public int getIdAtleta() {
-        return idAtleta;
+    public int getId() {
+        return Id;
     }
 
-    public void setIdAtleta(int idAtleta) {
-        this.idAtleta = idAtleta;
+    public void setId(int Id) {
+        this.Id = Id;
+    }
+    
+    public String getGenero() {
+        return genero;
     }
 
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public float getAltura() {
+        return altura;
+    }
+
+    public void setAltura(float altura) {
+        this.altura = altura;
+    }
+
+    // Constructor por defecto
+    public Atleta() {
+
+    }
+
+    //Constructor con todos los parámetros
+    public Atleta(String nombreCompleto, String region, String codigoRegion, int juegosOlimpicosParticipados, 
+                  int primerJuegoOlimpico, int oro, int plata, int bronce, int totalMedallas) {
+        this.nombreCompleto = nombreCompleto;
+        this.region = region;
+        this.codigoRegion = codigoRegion;
+        this.juegosOlimpicosParticipados = juegosOlimpicosParticipados;
+        this.primerJuegoOlimpico = primerJuegoOlimpico;
+        this.oro = oro;
+        this.plata = plata;
+        this.bronce = bronce;
+        this.totalMedallas = totalMedallas;
+    }
+
+    // Getters y Setters
     public String getNombreCompleto() {
         return nombreCompleto;
     }
@@ -68,44 +99,28 @@ public class Atleta {
         this.primerJuegoOlimpico = primerJuegoOlimpico;
     }
 
-    public int getEdadUltimoJuego() {
-        return edadUltimoJuego;
+    public int getOro() {
+        return oro;
     }
 
-    public void setEdadUltimoJuego(int edadUltimoJuego) {
-        this.edadUltimoJuego = edadUltimoJuego;
+    public void setOro(int oro) {
+        this.oro = oro;
     }
 
-    public int getTotalParticipaciones() {
-        return totalParticipaciones;
+    public int getPlata() {
+        return plata;
     }
 
-    public void setTotalParticipaciones(int totalParticipaciones) {
-        this.totalParticipaciones = totalParticipaciones;
+    public void setPlata(int plata) {
+        this.plata = plata;
     }
 
-    public int getMedallasOro() {
-        return medallasOro;
+    public int getBronce() {
+        return bronce;
     }
 
-    public void setMedallasOro(int medallasOro) {
-        this.medallasOro = medallasOro;
-    }
-
-    public int getMedallasPlata() {
-        return medallasPlata;
-    }
-
-    public void setMedallasPlata(int medallasPlata) {
-        this.medallasPlata = medallasPlata;
-    }
-
-    public int getMedallasBronce() {
-        return medallasBronce;
-    }
-
-    public void setMedallasBronce(int medallasBronce) {
-        this.medallasBronce = medallasBronce;
+    public void setBronce(int bronce) {
+        this.bronce = bronce;
     }
 
     public int getTotalMedallas() {
@@ -115,19 +130,19 @@ public class Atleta {
     public void setTotalMedallas(int totalMedallas) {
         this.totalMedallas = totalMedallas;
     }
-    
-     public void setMedallas(String medallasCadena) {
-        if (medallasCadena == null || medallasCadena.isEmpty()) {
-            throw new IllegalArgumentException("La cadena de medallas no puede ser nula o vacía.");
-        }
-        try {
-            String[] partes = medallasCadena.split(",");
-            this.medallasOro = Integer.parseInt(partes[0].split(":")[1].trim());
-            this.medallasPlata = Integer.parseInt(partes[1].split(":")[1].trim());
-            this.medallasBronce = Integer.parseInt(partes[2].split(":")[1].trim());
-            this.totalMedallas = Integer.parseInt(partes[3].split(":")[1].trim());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Formato de cadena de medallas inválido: " + medallasCadena, e);
-        }
+
+    @Override
+    public String toString() {
+        return "Atleta{" +
+                "nombreCompleto='" + nombreCompleto + '\'' +
+                ", region='" + region + '\'' +
+                ", codigoRegion='" + codigoRegion + '\'' +
+                ", juegosOlimpicosParticipados=" + juegosOlimpicosParticipados +
+                ", primerJuegoOlimpico=" + primerJuegoOlimpico +
+                ", oro=" + oro +
+                ", plata=" + plata +
+                ", bronce=" + bronce +
+                ", totalMedallas=" + totalMedallas +
+                '}';
     }
 }
