@@ -55,6 +55,42 @@ public class AtletaDAO {
         return atletas;
     }
 
+
+    //Método para obtener el último ID de la región:
+    public int ultimoIdRegion() {
+        String sql = "SELECT MAX(id_region) FROM region";
+        int ultimoId = 0;
+
+        try (Statement stmt = conexion.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                ultimoId = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ultimoId;
+
+    }
+
+        //Método para obtener el último ID de la región:
+        public int ultimoIdCompetidores() {
+            String sql = "SELECT MAX(id_competidores) FROM competidor_juego_olimpico";
+            int ultimoId = 0;
+    
+            try (Statement stmt = conexion.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+                if (rs.next()) {
+                    ultimoId = rs.getInt(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    
+            return ultimoId;
+    
+        }
+
+
     // Método para obtener un atleta específico por su ID
     public Atleta obtenerAtletaPorId(int idAtleta) {
         Atleta atleta = null;
@@ -97,62 +133,74 @@ public class AtletaDAO {
         return atleta;
     }
 
-    public void insertarAtleta(String nombre, String genero, float altura, String nombreRegion, int idRegion) {
-        // Primero obtener el ID del nuevo atleta
-        int nuevoId = obtenerUltimoId() + 1;
-    
-        // Consultas SQL para insertar en las tablas correspondientes
-        String sqlAtleta = "INSERT INTO atleta (id_atleta, nombre_completo, altura, genero) VALUES (?, ?, ?, ?)";
-        String sqlRegionAtleta = "INSERT INTO region_atleta (id_atleta, id_region) VALUES (?, ?)";
-        String sqlCompetidorJuegoOlimpico = "INSERT INTO competidor_juego_olimpico (id_atleta, id_juego_olimpico) VALUES (?, ?)";
-    
+  public void insertarAtleta(String nombre, String genero, float altura, String nombreRegion, String noc, int idRegion) {
+    // Primero obtener el ID del nuevo atleta
+    int nuevoId = obtenerUltimoId() + 1;
+
+    // Consultas SQL para insertar en las tablas correspondientes
+    String sqlRegion = "INSERT INTO region (id_region, noc, nombre_region) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nombre_region = VALUES(nombre_region)";
+    String sqlAtleta = "INSERT INTO atleta (id_atleta, nombre_completo, altura, genero) VALUES (?, ?, ?, ?)";
+    String sqlRegionAtleta = "INSERT INTO region_atleta (id_atleta, id_region) VALUES (?, ?)";
+    String sqlCompetidorJuegoOlimpico = "INSERT INTO competidor_juego_olimpico (id_competidores, id_atleta, id_juego_olimpico, edad) VALUES (?, ?, ?, ?)";
+    int ultimoIdCompetidores = ultimoIdCompetidores() + 1;
+    try {
+        // Comenzamos una transacción
+        conexion.setAutoCommit(false);
+
+        // Insertamos en la tabla region
+        try (PreparedStatement pstRegion = conexion.prepareStatement(sqlRegion)) {
+            pstRegion.setInt(1, idRegion);
+            pstRegion.setString(2, noc); // Si no se proporciona NOC, se usa un valor predeterminado "N/A"
+            pstRegion.setString(3, nombreRegion);
+            pstRegion.executeUpdate();
+        }
+
+        // Insertamos en la tabla atleta
+        try (PreparedStatement pstAtleta = conexion.prepareStatement(sqlAtleta)) {
+            pstAtleta.setInt(1, nuevoId);
+            pstAtleta.setString(2, nombre);
+            pstAtleta.setFloat(3, altura);
+            pstAtleta.setString(4, genero);
+            pstAtleta.executeUpdate();
+        }
+
+        // Insertamos en la tabla region_atleta
+        try (PreparedStatement pstRegionAtleta = conexion.prepareStatement(sqlRegionAtleta)) {
+            pstRegionAtleta.setInt(1, nuevoId);
+            pstRegionAtleta.setInt(2, idRegion); // Asumimos que el idRegion es proporcionado
+            pstRegionAtleta.executeUpdate();
+        }
+
+        // Insertamos en la tabla competidor_juego_olimpico con un juego olímpico por defecto (id_juego_olimpico = 1)
+        try (PreparedStatement pstCompetidor = conexion.prepareStatement(sqlCompetidorJuegoOlimpico)) {
+            pstCompetidor.setInt(1, ultimoIdCompetidores); // Id de competidor asociado al nuevo atleta
+            pstCompetidor.setInt(2, nuevoId); // Insertar el atleta
+            pstCompetidor.setInt(3, 1); // Asumimos que el id_juego_olimpico por defecto es 1
+            pstCompetidor.setInt(4, 16); // Asumimos que la edad por defecto es 16.
+            pstCompetidor.executeUpdate();
+        }
+
+        // Commit de la transacción
+        conexion.commit();
+
+    } catch (SQLException e) {
+        // En caso de error, hacer rollback
         try {
-            // Comenzamos una transacción
-            conexion.setAutoCommit(false);
-    
-            // Insertamos en la tabla atleta
-            try (PreparedStatement pstAtleta = conexion.prepareStatement(sqlAtleta)) {
-                pstAtleta.setInt(1, nuevoId);
-                pstAtleta.setString(2, nombre);
-                pstAtleta.setFloat(3, altura);
-                pstAtleta.setString(4, genero);
-                pstAtleta.executeUpdate();
-            }
-    
-            // Insertamos en la tabla region_atleta
-            try (PreparedStatement pstRegionAtleta = conexion.prepareStatement(sqlRegionAtleta)) {
-                pstRegionAtleta.setInt(1, nuevoId);
-                pstRegionAtleta.setInt(2, idRegion); // Asumimos que el idRegion es proporcionado
-                pstRegionAtleta.executeUpdate();
-            }
-    
-            // Insertamos en la tabla competidor_juego_olimpico con un juego olímpico por defecto (id_juego_olimpico = 1)
-            try (PreparedStatement pstCompetidor = conexion.prepareStatement(sqlCompetidorJuegoOlimpico)) {
-                pstCompetidor.setInt(1, nuevoId); // Insertar el atleta
-                pstCompetidor.setInt(2, 1); // Asumimos que el id_juego_olimpico por defecto es 1
-                pstCompetidor.executeUpdate();
-            }
-    
-            // Commit de la transacción
-            conexion.commit();
-    
+            conexion.rollback();
+        } catch (SQLException rollbackException) {
+            rollbackException.printStackTrace();
+        }
+        e.printStackTrace();
+    } finally {
+        // Restauramos el autocommit para que otras transacciones puedan ejecutarse normalmente
+        try {
+            conexion.setAutoCommit(true);
         } catch (SQLException e) {
-            // En caso de error, hacer rollback
-            try {
-                conexion.rollback();
-            } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
-            }
             e.printStackTrace();
-        } finally {
-            // Restauramos el autocommit para que otras transacciones puedan ejecutarse normalmente
-            try {
-                conexion.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
+}
+
     
 
     private int obtenerUltimoId() {

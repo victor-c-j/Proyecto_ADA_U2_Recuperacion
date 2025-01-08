@@ -134,12 +134,14 @@ public class ControladorVentanaAtletas implements ActionListener {
         String nombre = JOptionPane.showInputDialog(vva, "Nombre Completo:");
         String genero = JOptionPane.showInputDialog(vva, "Género:");
         String alturaStr = JOptionPane.showInputDialog(vva, "Altura (en metros):");
-
+        String nombreRegion = JOptionPane.showInputDialog(vva, "Nombre region: ");
+        String noc = JOptionPane.showInputDialog(vva, "Abreviatura(noc) region: ");
+        int idRegion = atletaDAO.ultimoIdRegion() + 1;
         try {
             float altura = Float.parseFloat(alturaStr);
 
 
-            atletaDAO.insertarAtletas(nombre, genero, altura);
+            atletaDAO.insertarAtleta(nombre, genero, altura, nombreRegion, noc, idRegion);
             cargarDatosAtletas();
             vva.mostrarMensaje("Atleta registrado con éxito.");
         } catch (NumberFormatException e) {
