@@ -321,4 +321,54 @@ public class AtletaDAO {
         return atleta; // Retorna el atleta encontrado o null si no se encuentra
     }
     
+    //Mas de un atleta:
+    public List<Atleta> obtenerAtletasPorNombre(String nombreCompleto) {
+        List<Atleta> atletas = new ArrayList<>();
+        String consulta = "SELECT "
+                + "a.id_atleta, a.nombre_completo, r.nombre_region, r.noc, "
+                + "COUNT(DISTINCT cj.id_juego_olimpico) AS JuegosOlimpicosParticipados, "
+                + "MIN(jo.agno_celebracion) AS PrimerJuegoOlimpico, "
+                + "SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS Oro, "
+                + "SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS Plata, "
+                + "SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS Bronce, "
+                + "SUM(CASE WHEN cde.id_puesto IN (1, 2, 3) THEN 1 ELSE 0 END) AS TotalMedallas "
+                + "FROM atleta a "
+                + "JOIN region_atleta ra ON a.id_atleta = ra.id_atleta "
+                + "JOIN region r ON ra.id_region = r.id_region "
+                + "JOIN competidor_juego_olimpico cj ON a.id_atleta = cj.id_atleta "
+                + "LEFT JOIN competidor_de_evento cde ON cj.id_competidores = cde.id_competidor "
+                + "LEFT JOIN juego_olimpico jo ON cj.id_juego_olimpico = jo.id_juego_olimpico "
+                + "WHERE a.nombre_completo = ? "
+                + "GROUP BY a.id_atleta, a.nombre_completo, r.nombre_region, r.noc "
+                + "ORDER BY a.nombre_completo";
+        
+        try (PreparedStatement stmt = conexion.prepareStatement(consulta)) {
+            stmt.setString(1, nombreCompleto); // Asignamos el nombre del atleta a la consulta
+        
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Atleta atleta = new Atleta();
+                    atleta.setId(rs.getInt("id_atleta"));
+                    atleta.setNombreCompleto(rs.getString("nombre_completo"));
+                    atleta.setRegion(rs.getString("nombre_region"));
+                    atleta.setCodigoRegion(rs.getString("noc"));
+                    atleta.setJuegosOlimpicosParticipados(rs.getInt("JuegosOlimpicosParticipados"));
+                    atleta.setPrimerJuegoOlimpico(rs.getInt("PrimerJuegoOlimpico"));
+                    atleta.setOro(rs.getInt("Oro"));
+                    atleta.setPlata(rs.getInt("Plata"));
+                    atleta.setBronce(rs.getInt("Bronce"));
+                    atleta.setTotalMedallas(rs.getInt("TotalMedallas"));
+                    
+                    // Añadir el atleta a la lista
+                    atletas.add(atleta);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return atletas; // Devuelve la lista de atletas (vacía si no hay resultados)
+    }
+    
+    
 }

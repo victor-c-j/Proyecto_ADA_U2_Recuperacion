@@ -565,14 +565,14 @@ COMMIT;
 
 -- 1.Mostrar el nombre completo de un atleta, la región a la que pertenece, entre paréntesis el nombre abreviado de la región, el número de juegos olímpicos en los que ha participado,  
 -- el primer juego olímpico en el que participó, su edad, el número total de participaciones, y la cantidad de medallas olímpicas que tiene de la siguiente forma: Oro: 1, Plata: 0, Bronce: 3, Total: 4.
+-- La edad no se muestra por que está ligada a cada juego olímpico, este dato se podría usar para calcular la edad media de los competidores en cada año de los juegos olímpicos entre otras cosas.
+
 SELECT 
     a.nombre_completo AS "Atleta",
     r.nombre_region AS "Región",
     CONCAT('(', r.noc, ')') AS "Código Región",
     COUNT(DISTINCT cj.id_juego_olimpico) AS "Juegos Olímpicos Participados",
     MIN(jo.agno_celebracion) AS "Primer Juego Olímpico",
-    cj.edad AS "Edad en el Último Juego",
-    COUNT(*) AS "Total de Participaciones",
     SUM(CASE WHEN cde.id_puesto = 1 THEN 1 ELSE 0 END) AS "Oro",
     SUM(CASE WHEN cde.id_puesto = 2 THEN 1 ELSE 0 END) AS "Plata",
     SUM(CASE WHEN cde.id_puesto = 3 THEN 1 ELSE 0 END) AS "Bronce",
@@ -646,3 +646,6 @@ GROUP BY
     jo.id_juego_olimpico, c.nombre_ciudad, c.pais, jo.nombre_juegos, jo.agno_celebracion, jo.estacion
 ORDER BY 
     jo.agno_celebracion ASC;
+
+   
+

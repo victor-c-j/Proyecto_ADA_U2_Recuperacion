@@ -39,12 +39,21 @@ public class ControladorVentanaPrincipal implements ActionListener {
                 vvp.dispose();
                 break;
             case "Juegos":
-                /*VistaVentanaJuegos vvj = new VistaVentanaJuegos(new JuegoOlimpicoDAO(c.getConexion()));
-                vvj.setVisible(true);
-                ControladorVentanaJuegos cvj = new ControladorVentanaJuegos(vvj, c);*/
-                JOptionPane.showMessageDialog(null, "La vista hacia los Juegos Olímpicos está temporalmente deshabilitada.",
+                /*
+                 * VistaVentanaJuegos vvj = new VistaVentanaJuegos(new
+                 * JuegoOlimpicoDAO(c.getConexion()));
+                 * vvj.setVisible(true);
+                 * ControladorVentanaJuegos cvj = new ControladorVentanaJuegos(vvj, c);
+                 */
+                JOptionPane.showMessageDialog(null,
+                        "La vista hacia los Juegos Olímpicos está temporalmente deshabilitada.",
                         "Información", JOptionPane.INFORMATION_MESSAGE);
-                //vvp.dispose();
+                // vvp.dispose();
+                break;
+            case "Medallero":
+                JOptionPane.showMessageDialog(null,
+                        "La vista hacia el medallero está temporalmente deshabilitada.",
+                        "Información", JOptionPane.INFORMATION_MESSAGE);
                 break;
         }
     }
@@ -53,5 +62,6 @@ public class ControladorVentanaPrincipal implements ActionListener {
         vvp.jButtonAtletas.addActionListener(listener);
         vvp.jButtonDeportes.addActionListener(listener);
         vvp.jButtonJuegos.addActionListener(listener);
+        vvp.jButtonMedallero.addActionListener(listener);
     }
 }

@@ -8,6 +8,9 @@ import com.mycompany.Vista.VistaVentanaPrincipal;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -41,7 +44,7 @@ public class ControladorVentanaAtletas implements ActionListener {
                 break;
 
             case "Atrás":
-                irAtras();
+                pedirValoracionAntesDeSalir();
                 break;
 
             case "Eliminar":
@@ -72,7 +75,7 @@ public class ControladorVentanaAtletas implements ActionListener {
     private void filtrarAtletas() {
         String busqueda = vva.getTextoBusqueda();
         if (!busqueda.isEmpty()) {
-            List<Atleta> atletasFiltrados = atletaDAO.obtenerAtletas(); // Cambia esto según tus necesidades
+            List<Atleta> atletasFiltrados = atletaDAO.obtenerAtletasPorNombre(busqueda); // Cambia esto según tus necesidades
             vva.actualizarTablaAtletas(atletasFiltrados);
         } else {
             cargarDatosAtletas();
@@ -131,31 +134,111 @@ public class ControladorVentanaAtletas implements ActionListener {
      * Registra un nuevo atleta en el sistema.
      */
     private void registrarAtleta() {
-        String nombre = JOptionPane.showInputDialog(vva, "Nombre Completo:");
-        String genero = JOptionPane.showInputDialog(vva, "Género:");
-        String alturaStr = JOptionPane.showInputDialog(vva, "Altura (en metros):");
-        String nombreRegion = JOptionPane.showInputDialog(vva, "Nombre region: ");
-        String noc = JOptionPane.showInputDialog(vva, "Abreviatura(noc) region: ");
-        int idRegion = atletaDAO.ultimoIdRegion() + 1;
         try {
+            // Solicitamos la información del atleta
+            String nombre = JOptionPane.showInputDialog(vva, "Nombre Completo:");
+            if (nombre == null || nombre.trim().isEmpty()) {
+                vva.mostrarMensaje("Error: El nombre completo es obligatorio.");
+                return; // Salimos del método si el campo está vacío
+            }
+    
+            String genero = JOptionPane.showInputDialog(vva, "Género:");
+            if (genero == null || genero.trim().isEmpty()) {
+                vva.mostrarMensaje("Error: El género es obligatorio.");
+                return; // Salimos del método si el campo está vacío
+            }
+    
+            String alturaStr = JOptionPane.showInputDialog(vva, "Altura (en metros):");
+            if (alturaStr == null || alturaStr.trim().isEmpty()) {
+                vva.mostrarMensaje("Error: La altura es obligatoria.");
+                return; // Salimos del método si el campo está vacío
+            }
+    
+            String nombreRegion = JOptionPane.showInputDialog(vva, "Nombre región:");
+            if (nombreRegion == null || nombreRegion.trim().isEmpty()) {
+                vva.mostrarMensaje("Error: El nombre de la región es obligatorio.");
+                return; // Salimos del método si el campo está vacío
+            }
+    
+            String noc = JOptionPane.showInputDialog(vva, "Abreviatura (noc) región:");
+            if (noc == null || noc.trim().isEmpty()) {
+                vva.mostrarMensaje("Error: La abreviatura de la región (noc) es obligatoria.");
+                return; // Salimos del método si el campo está vacío
+            }
+    
+            // Generamos el id de la región
+            int idRegion = atletaDAO.ultimoIdRegion() + 1;
+    
+            // Intentamos convertir la altura a float
             float altura = Float.parseFloat(alturaStr);
-
-
+    
+            // Insertamos el atleta en la base de datos
             atletaDAO.insertarAtleta(nombre, genero, altura, nombreRegion, noc, idRegion);
             cargarDatosAtletas();
             vva.mostrarMensaje("Atleta registrado con éxito.");
+    
         } catch (NumberFormatException e) {
             vva.mostrarMensaje("Error: Altura no válida.");
+        } catch (NullPointerException e) {
+            vva.mostrarMensaje("Error: No se seleccionó ningún valor en los campos.");
+        } catch (Exception e) {
+            vva.mostrarMensaje("Ocurrió un error inesperado: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Método que muestra la encuesta de satisfacción antes de cerrar la ventana.
+     */
+    private void pedirValoracionAntesDeSalir() {
+        int opcion = JOptionPane.showOptionDialog(vva, "¿Te gustaría valorar la aplicación?", "Valoración",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            // Pedir la puntuación y el comentario
+            String puntuacionStr = JOptionPane.showInputDialog(vva, "Puntuación (1-5):");
+            String comentario = JOptionPane.showInputDialog(vva, "Comentario (200 caracteres máximo):");
+
+            try {
+                int puntuacion = Integer.parseInt(puntuacionStr);
+                if (puntuacion < 1 || puntuacion > 5) {
+                    vva.mostrarMensaje("Error: La puntuación debe estar entre 1 y 5.");
+                    return;
+                }
+
+                if (comentario.length() > 200) {
+                    vva.mostrarMensaje("Error: El comentario debe tener máximo 200 caracteres.");
+                    return;
+                }
+
+                // Guardar la valoración en un archivo
+                guardarValoracion(puntuacion, comentario);
+            } catch (NumberFormatException e) {
+                vva.mostrarMensaje("Error: La puntuación debe ser un número válido.");
+            }
+
+            // Proceder a cerrar la ventana
+            VistaVentanaPrincipal vvp = new VistaVentanaPrincipal();
+            ControladorVentanaPrincipal cvp = new ControladorVentanaPrincipal(vvp, c);
+            vva.dispose();
+        } else {
+            // Si el usuario elige "Más tarde", simplemente cerrar la ventana
+            VistaVentanaPrincipal vvp = new VistaVentanaPrincipal();
+            ControladorVentanaPrincipal cvp = new ControladorVentanaPrincipal(vvp, c);
+            vva.dispose();
         }
     }
 
     /**
-     * Navega a la ventana principal y cierra la actual.
+     * Guarda la valoración en un archivo txt.
      */
-    private void irAtras() {
-        VistaVentanaPrincipal vvp = new VistaVentanaPrincipal();
-        ControladorVentanaPrincipal cvp = new ControladorVentanaPrincipal(vvp, c);
-        vva.dispose();
+    private void guardarValoracion(int puntuacion, String comentario) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("valoraciones.txt", true))) {
+            writer.write("Puntuación: " + puntuacion + "/5\n");
+            writer.write("Comentario: " + comentario + "\n");
+            writer.write("------------\n");
+        } catch (IOException e) {
+            vva.mostrarMensaje("Error al guardar la valoración.");
+        }
     }
 
     /**

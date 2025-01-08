@@ -2,6 +2,8 @@ package com.mycompany.Vista;
 
 import com.mycompany.Otros.Atleta;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -27,7 +29,7 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         DefaultTableModel modelo = new DefaultTableModel(columnNames, 0);
 
         for (Atleta atleta : atletas) {
-            modelo.addRow(new Object[]{
+            modelo.addRow(new Object[] {
                     atleta.getNombreCompleto(),
                     atleta.getRegion(),
                     atleta.getCodigoRegion(),
@@ -55,7 +57,7 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
                     (Integer) jTableAtletas.getValueAt(filaSeleccionada, 5), // Oro
                     (Integer) jTableAtletas.getValueAt(filaSeleccionada, 6), // Plata
                     (Integer) jTableAtletas.getValueAt(filaSeleccionada, 7), // Bronce
-                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 8)  // Total Medallas
+                    (Integer) jTableAtletas.getValueAt(filaSeleccionada, 8) // Total Medallas
             );
         }
         return null;
@@ -78,8 +80,6 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         jTextFieldAtletas.setText("");
     }
 
-    // Método auto-generado por el diseñador de interfaz gráfica para inicializar componentes
-    @SuppressWarnings("unchecked")
     private void initComponents() {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableAtletas = new javax.swing.JTable();
@@ -89,48 +89,72 @@ public class VistaVentanaAtletas extends javax.swing.JFrame {
         jButtonEditar = new javax.swing.JButton();
         jButtonRegistrar = new javax.swing.JButton();
         jButtonEliminar = new javax.swing.JButton();
-
+    
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestión de Atletas");
-
-        // Establece un Layout adecuado si es necesario
-        this.setLayout(new BorderLayout()); // O cualquier otro Layout adecuado para tus necesidades
-        jTableAtletas.setRowHeight(30); // Altura de las filas para mejor visibilidad
+    
+        // Establecer el Layout principal de la ventana
+        this.setLayout(new BorderLayout());
+    
+        // Configuración de la tabla
+        jTableAtletas.setRowHeight(30);
+    
+        // Pintar el encabezado de la tabla de un color azulado
+        jTableAtletas.getTableHeader().setBackground(new java.awt.Color(173, 216, 230)); // Color azulado claro
+    
         jScrollPane1.setViewportView(jTableAtletas);
-
-        jButtonBuscarAtletas.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
+    
+        // Configuración de los botones
+        jButtonBuscarAtletas.setFont(new java.awt.Font("Arial", 1, 18));
         jButtonBuscarAtletas.setText("Buscar");
-
-        jButtonAtras.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
+        jButtonBuscarAtletas.setBackground(java.awt.Color.BLACK); // Fondo negro
+        jButtonBuscarAtletas.setForeground(java.awt.Color.WHITE); // Texto blanco
+    
+        jButtonAtras.setFont(new java.awt.Font("Arial", 1, 18));
         jButtonAtras.setText("Atrás");
-
-        jButtonEditar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
+        jButtonAtras.setBackground(java.awt.Color.BLACK); // Fondo negro
+        jButtonAtras.setForeground(java.awt.Color.WHITE); // Texto blanco
+    
+        jButtonEditar.setFont(new java.awt.Font("Arial", 1, 18));
         jButtonEditar.setText("Editar");
-
-        jButtonRegistrar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
+        jButtonEditar.setBackground(java.awt.Color.BLACK); // Fondo negro
+        jButtonEditar.setForeground(java.awt.Color.WHITE); // Texto blanco
+    
+        jButtonRegistrar.setFont(new java.awt.Font("Arial", 1, 18));
         jButtonRegistrar.setText("Registrar");
-
-        jButtonEliminar.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
+        jButtonRegistrar.setBackground(java.awt.Color.BLACK); // Fondo negro
+        jButtonRegistrar.setForeground(java.awt.Color.WHITE); // Texto blanco
+    
+        jButtonEliminar.setFont(new java.awt.Font("Arial", 1, 18));
         jButtonEliminar.setText("Eliminar");
-
-        jTextFieldAtletas.setFont(new java.awt.Font("Arial", 1, 18)); // Texto más grande
-
-        // Aquí puedes mantener el diseño auto-generado del resto de componentes
-        // Agregar componentes al contenedor
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(jScrollPane1, BorderLayout.CENTER);
-
-        JPanel botonesPanel = new JPanel();
-        botonesPanel.add(jButtonBuscarAtletas);
-        botonesPanel.add(jButtonAtras);
-        botonesPanel.add(jButtonEditar);
-        botonesPanel.add(jButtonRegistrar);
-        botonesPanel.add(jButtonEliminar);
-        panel.add(botonesPanel, BorderLayout.SOUTH);
-
-        this.add(panel); // Agrega el panel a la ventana principal
+        jButtonEliminar.setBackground(java.awt.Color.BLACK); // Fondo negro
+        jButtonEliminar.setForeground(java.awt.Color.WHITE); // Texto blanco
+    
+        jTextFieldAtletas.setFont(new java.awt.Font("Arial", 1, 18));
+    
+        // Crear un panel con FlowLayout para alinear todos los elementos horizontalmente
+        JPanel panelInferior = new JPanel();
+        panelInferior.setLayout(new FlowLayout(FlowLayout.LEFT)); // Alinea todos los componentes a la izquierda
+    
+        // Añadir el JTextField a la izquierda
+        jTextFieldAtletas.setPreferredSize(new java.awt.Dimension(500, 40)); // Tamaño del JTextField
+        panelInferior.add(jTextFieldAtletas);
+    
+        // Añadir el botón de búsqueda
+        panelInferior.add(jButtonBuscarAtletas);
+    
+        // Añadir los otros botones
+        panelInferior.add(jButtonAtras);
+        panelInferior.add(jButtonEditar);
+        panelInferior.add(jButtonRegistrar);
+        panelInferior.add(jButtonEliminar);
+    
+        // Añadir el panel inferior a la ventana
+        this.add(jScrollPane1, BorderLayout.CENTER); // La tabla en el centro
+        this.add(panelInferior, BorderLayout.SOUTH); // El panel con todos los componentes alineados en la parte inferior
     }
+    
+    
 
     // Variables de la interfaz gráfica
     public javax.swing.JButton jButtonAtras;

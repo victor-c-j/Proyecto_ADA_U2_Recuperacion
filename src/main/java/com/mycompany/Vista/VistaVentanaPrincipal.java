@@ -1,8 +1,13 @@
 package com.mycompany.Vista;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JButton;
 
 /**
  *
@@ -63,62 +68,85 @@ public class VistaVentanaPrincipal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabelBienvenida.setFont(new java.awt.Font("Arial", 1, 36)); // Texto más grande
+        // Título Bienvenido con fuente más grande y estilo
+        jLabelBienvenida.setFont(new Font("Arial", Font.BOLD, 48)); // Texto más grande
         jLabelBienvenida.setText("Bienvenido");
 
-        jButtonDeportes.setFont(new java.awt.Font("Arial", 1, 24)); // Botón más grande
-        jButtonDeportes.setText("Deportes");
+        // Estilo de los botones: color de fondo negro, texto blanco
+        styleButton(jButtonDeportes, "Deportes");
+        styleButton(jButtonAtletas, "Atletas");
+        styleButton(jButtonJuegos, "Juegos");
+        styleButton(jButtonMedallero, "Medallero");
 
-        jButtonAtletas.setFont(new java.awt.Font("Arial", 1, 24)); // Botón más grande
-        jButtonAtletas.setText("Atletas");
-
-        jButtonJuegos.setFont(new java.awt.Font("Arial", 1, 24)); // Botón más grande
-        jButtonJuegos.setText("Juegos");
-
-        jButtonMedallero.setFont(new java.awt.Font("Arial", 1, 24)); // Botón más grande
-        jButtonMedallero.setText("Medallero");
+        // Agregar efectos de mouse sobre los botones
+        addMouseEffect(jButtonDeportes);
+        addMouseEffect(jButtonAtletas);
+        addMouseEffect(jButtonJuegos);
+        addMouseEffect(jButtonMedallero);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(500, 500, 500) // Centrar el texto de bienvenida
-                                                .addComponent(jLabelBienvenida))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(200, 200, 200) // Ajustar posición horizontal de los botones
-                                                .addComponent(jButtonAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(50, 50, 50) // Espacio entre botones
-                                                .addComponent(jButtonDeportes, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(50, 50, 50)
-                                                .addComponent(jButtonJuegos, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(50, 50, 50)
-                                                .addComponent(jButtonMedallero, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(200, 200, 200) // Centrar la imagen
-                                                .addComponent(jLabelFondo, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE))) // Tamaño ajustado del JLabel
-                                .addContainerGap(200, Short.MAX_VALUE)) // Bordes laterales
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addGap(450, 450, 450) // Centrar el texto de bienvenida
+                                        .addComponent(jLabelBienvenida))
+                                .addGroup(layout.createSequentialGroup()
+                                        .addGap(250, 250, 250) // Ajustar posición horizontal de los botones
+                                        .addComponent(jButtonAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(50, 50, 50) // Espacio entre botones
+                                        .addComponent(jButtonDeportes, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(50, 50, 50)
+                                        .addComponent(jButtonJuegos, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(50, 50, 50)
+                                        .addComponent(jButtonMedallero, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                        .addGap(200, 200, 200) // Centrar la imagen
+                                        .addComponent(jLabelFondo, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE))) // Tamaño ajustado del JLabel
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(30, 30, 30) // Espaciado inicial
-                                .addComponent(jLabelBienvenida)
-                                .addGap(50, 50, 50) // Espacio entre título y botones
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jButtonAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jButtonDeportes, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jButtonJuegos, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jButtonMedallero, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(50, 50, 50) // Espacio entre botones y la imagen
-                                .addComponent(jLabelFondo, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE) // Tamaño del JLabel para la imagen
-                                .addContainerGap(70, Short.MAX_VALUE)) // Espacio inferior
-        );
+                layout.createSequentialGroup()
+                        .addGap(30, 30, 30) // Espaciado inicial
+                        .addComponent(jLabelBienvenida)
+                        .addGap(50, 50, 50) // Espacio entre título y botones
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButtonAtletas, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonDeportes, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonJuegos, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonMedallero, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(50, 50, 50) // Espacio entre botones y la imagen
+                        .addComponent(jLabelFondo, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE) // Tamaño del JLabel para la imagen
+                        .addContainerGap(70, Short.MAX_VALUE)) // Espacio inferior
+        ;
 
         pack();
     }// </editor-fold>                        
+
+    // Método para aplicar el estilo a los botones
+    private void styleButton(JButton button, String text) {
+        button.setText(text);
+        button.setFont(new Font("Arial", Font.BOLD, 20)); // Estilo y tamaño de letra
+        button.setBackground(Color.BLACK); // Fondo negro
+        button.setForeground(Color.WHITE); // Texto blanco
+        button.setFocusPainted(false); // Eliminar el borde de selección del botón
+        button.setBorderPainted(false); // Eliminar borde del botón
+    }
+
+    // Método para agregar efectos al mouse sobre los botones
+    private void addMouseEffect(JButton button) {
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(Color.GRAY); // Cambiar el color de fondo cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(Color.BLACK); // Restaurar el color de fondo cuando el mouse sale
+            }
+        });
+    }
 
     /**
      * @param args the command line arguments
