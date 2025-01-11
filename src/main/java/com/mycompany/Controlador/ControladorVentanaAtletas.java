@@ -108,12 +108,14 @@ public class ControladorVentanaAtletas implements ActionListener {
             String nuevoNombre = JOptionPane.showInputDialog(vva, "Nuevo nombre completo:", atletaSeleccionado.getNombreCompleto());
             String nuevoGenero = JOptionPane.showInputDialog(vva, "Nuevo género:", atletaSeleccionado.getGenero());
             String nuevoAlturaStr = JOptionPane.showInputDialog(vva, "Nueva altura:", atletaSeleccionado.getAltura());
-
+            Atleta atletaAux = atletaDAO.obtenerAtletaPorNombre(atletaSeleccionado.getNombreCompleto());
+            
             try {
                 float nuevaAltura = Float.parseFloat(nuevoAlturaStr);
                 atletaSeleccionado.setNombreCompleto(nuevoNombre);
                 atletaSeleccionado.setGenero(nuevoGenero);
                 atletaSeleccionado.setAltura(nuevaAltura);
+                atletaSeleccionado.setId(atletaAux.getId());
 
                 boolean actualizado = atletaDAO.editarAtleta(atletaSeleccionado);
                 if (actualizado) {
